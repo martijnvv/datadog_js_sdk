@@ -1,5 +1,5 @@
 homepage: "https://martijnvanvreeden.nl"
 documentation: "https://github.com/martijnvv/datadog_js_sdk"
 versions:
-  - sha: df81af5f2d478780dd861c20ac1377007e133dfd
-    changeNotes: Initial release.
+  - sha: acc2099e0dcc73791bb82732c161859d24f65348
+    changeNotes: Initial release, with updated homepage
