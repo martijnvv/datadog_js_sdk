@@ -294,7 +294,14 @@ ___TEMPLATE_PARAMETERS___
         "type": "LABEL",
         "name": "Privacy Level Documentation",
         "displayName": "Learn more about the default privacy levels in \u003ca href\u003d\"https://docs.datadoghq.com/real_user_monitoring/session_replay/browser/privacy_options/\"\u003ethe official Datadog documentation\u003c/a\u003e"
-      }
+      },
+      {
+        "type": "TEXT",
+        "name": "allowedTracingUrls",
+        "displayName": "Allowed URLs for trace header injection",
+        "help", "A list of allowed URLs or regular expressions, see \u003ca href\u003d\"https://docs.datadoghq.com/tracing/other_telemetry/rum/?tab=browserrum\"\u003ethe official Datadog documentation\u003c/a\u003e",
+        "simpleValueType": true
+      },        
     ]
   },
   {
@@ -330,6 +337,14 @@ const debug = data.debug;
 const url = "https://www.datadoghq-browser-agent.com/" + encodeUriComponent(data.urlLocation) + "/" + encodeUriComponent(data.urlVersion) + "/datadog-rum.js";
 injectScript(url, onScriptLoaded, onScriptError);
 
+function deserialize_regexp(key, value) {
+  if (value.toString().indexOf("__REGEXP ") == 0) {
+    const m = value.split("__REGEXP ")[1].match(new RegExp("\/(.*)\/(.*)?"));
+    return new RegExp(m[1], m[2] || "");
+  } else
+    return value;
+}
+
 function onScriptLoaded() {
     if(debug){
       log('Datadog RUM script successfully loaded: ' + url);
@@ -350,7 +365,8 @@ function onScriptLoaded() {
       trackLongTasks: data.trackLongTasks,
       defaultPrivacyLevel: data.defaultPrivacyLevel,
       forwardErrorsToLogs: data.forwardErrorsToLogs || true, // default true
-      trackingConsent: data.trackingConsent || "granted" // default granted
+      trackingConsent: data.trackingConsent || "granted", // default granted
+      allowedTracingUrls: JSON.parse(data.allowedTracingUrls, deserialize_regexp)
     });
 
     // Step 3: Copy DD_RUM from the window and check its configuration.
