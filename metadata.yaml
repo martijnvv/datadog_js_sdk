@@ -1,5 +1,5 @@
 homepage: "https://martijnvanvreeden.nl"
 documentation: "https://github.com/martijnvv/datadog_js_sdk"
 versions:
-  - sha: acc2099e0dcc73791bb82732c161859d24f65348
-    changeNotes: Initial release, with updated homepage
+  - sha: 898caa7cccadc49b243f6c541e48fc98cc023639
+    changeNotes: Set allowedTracingUrls as an array of quoted strings
