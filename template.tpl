@@ -289,12 +289,19 @@ ___TEMPLATE_PARAMETERS___
         ],
         "simpleValueType": true,
         "help": "set defaultPrivacyLevel to mask, mask-user-input, or allow"
-      },
+      },         
+      {
+        "type": "TEXT",
+        "name": "allowedTracingUrls",
+        "displayName": "Allowed URLs for tracing",
+        "help": "Include a list of quoted URLs in square brackets, e.g. [\"https://api.mydomain.com\", \"https://another.domain.com\"]",
+        "simpleValueType": true
+      },      
       {
         "type": "LABEL",
         "name": "Privacy Level Documentation",
         "displayName": "Learn more about the default privacy levels in \u003ca href\u003d\"https://docs.datadoghq.com/real_user_monitoring/session_replay/browser/privacy_options/\"\u003ethe official Datadog documentation\u003c/a\u003e"
-      }
+      }     
     ]
   },
   {
@@ -324,6 +331,7 @@ const injectScript = require('injectScript');
 const copyFromWindow = require('copyFromWindow');
 const encodeUriComponent = require('encodeUriComponent');
 const makeInteger = require('makeInteger');
+const JSON = require('JSON');
 const debug = data.debug;
 
 // Step 1: Inject the script and wait for the script to load.
@@ -350,7 +358,8 @@ function onScriptLoaded() {
       trackLongTasks: data.trackLongTasks,
       defaultPrivacyLevel: data.defaultPrivacyLevel,
       forwardErrorsToLogs: data.forwardErrorsToLogs || true, // default true
-      trackingConsent: data.trackingConsent || "granted" // default granted
+      trackingConsent: data.trackingConsent || "granted", // default granted
+      allowedTracingUrls: data.allowedTracingUrls ? JSON.parse(data.allowedTracingUrls) : []
     });
 
     // Step 3: Copy DD_RUM from the window and check its configuration.
