@@ -11,7 +11,7 @@ ___INFO___
 {
   "type": "TAG",
   "id": "cvt_temp_public_id",
-  "version": 1,
+  "version": 1.1,
   "securityGroups": [],
   "displayName": "Datadog RUM Browser SDK",
   "categories": "[ANALYTICS]",
@@ -75,10 +75,6 @@ ___TEMPLATE_PARAMETERS___
             "displayValue": "v5"
           },
           {
-            "value": "v5",
-            "displayValue": "v5"
-          },
-          {
             "value": "v6",
             "displayValue": "v6"
           },
@@ -92,7 +88,8 @@ ___TEMPLATE_PARAMETERS___
           }
         ],
         "simpleValueType": true,
-        "help": "The value in the url https://www.datadoghq-browser-agent.com/us1/v5/datadog-logs.js , in this example v5"
+        "help": "The value in the url https://www.datadoghq-browser-agent.com/us1/v5/datadog-logs.js , in this example v5",
+        "defaultValue": "v6"
       }
     ]
   },
@@ -213,7 +210,8 @@ ___TEMPLATE_PARAMETERS___
             "displayValue": "false"
           }
         ],
-        "simpleValueType": true
+        "simpleValueType": true,
+        "defaultValue": true
       },
       {
         "type": "SELECT",
@@ -230,7 +228,8 @@ ___TEMPLATE_PARAMETERS___
             "displayValue": "false"
           }
         ],
-        "simpleValueType": true
+        "simpleValueType": true,
+        "defaultValue": true
       },
       {
         "type": "SELECT",
@@ -247,7 +246,26 @@ ___TEMPLATE_PARAMETERS___
             "displayValue": "false"
           }
         ],
-        "simpleValueType": true
+        "simpleValueType": true,
+        "defaultValue": true
+      },
+      {
+        "type": "SELECT",
+        "name": "trackBfcacheViews",
+        "displayName": "trackBfcacheViews",
+        "macrosInSelect": true,
+        "selectItems": [
+          {
+            "value": true,
+            "displayValue": "true"
+          },
+          {
+            "value": false,
+            "displayValue": "false"
+          }
+        ],
+        "simpleValueType": true,
+        "defaultValue": false
       },
       {
         "type": "SELECT",
@@ -270,6 +288,23 @@ ___TEMPLATE_PARAMETERS___
       },
       {
         "type": "SELECT",
+        "name": "trackAnonymousUser",
+        "displayName": "trackAnonymousUser",
+        "macrosInSelect": true,
+        "selectItems": [
+          {
+            "value": true,
+            "displayValue": "true"
+          },
+          {
+            "value": false,
+            "displayValue": "false"
+          }
+        ],
+        "simpleValueType": true
+      },
+      {
+        "type": "SELECT",
         "name": "defaultPrivacyLevel",
         "displayName": "Default Privacy Level",
         "macrosInSelect": true,
@@ -289,19 +324,12 @@ ___TEMPLATE_PARAMETERS___
         ],
         "simpleValueType": true,
         "help": "set defaultPrivacyLevel to mask, mask-user-input, or allow"
-      },         
-      {
-        "type": "TEXT",
-        "name": "allowedTracingUrls",
-        "displayName": "Allowed URLs for tracing",
-        "help": "Include a list of quoted URLs in square brackets, e.g. [\"https://api.mydomain.com\", \"https://another.domain.com\"]",
-        "simpleValueType": true
-      },      
+      },
       {
         "type": "LABEL",
         "name": "Privacy Level Documentation",
         "displayName": "Learn more about the default privacy levels in \u003ca href\u003d\"https://docs.datadoghq.com/real_user_monitoring/session_replay/browser/privacy_options/\"\u003ethe official Datadog documentation\u003c/a\u003e"
-      }     
+      }
     ]
   },
   {
@@ -331,7 +359,6 @@ const injectScript = require('injectScript');
 const copyFromWindow = require('copyFromWindow');
 const encodeUriComponent = require('encodeUriComponent');
 const makeInteger = require('makeInteger');
-const JSON = require('JSON');
 const debug = data.debug;
 
 // Step 1: Inject the script and wait for the script to load.
@@ -356,10 +383,11 @@ function onScriptLoaded() {
       trackUserInteractions: data.trackUserInteractions,
       trackResources: data.trackResources,
       trackLongTasks: data.trackLongTasks,
+      trackAnonymousUser: data.trackAnonymousUser,
+      trackBfcacheViews: data.trackBfcacheViews,
       defaultPrivacyLevel: data.defaultPrivacyLevel,
       forwardErrorsToLogs: data.forwardErrorsToLogs || true, // default true
-      trackingConsent: data.trackingConsent || "granted", // default granted
-      allowedTracingUrls: data.allowedTracingUrls ? JSON.parse(data.allowedTracingUrls) : []
+      trackingConsent: data.trackingConsent || "granted" // default granted
     });
 
     // Step 3: Copy DD_RUM from the window and check its configuration.
@@ -380,7 +408,9 @@ function onScriptLoaded() {
 }
 
 function onScriptError() {
+  if(debug){
     log('Failed to load the Datadog RUM script.');
+  }
     // You might also want to fail the tag explicitly if the script load fails.
     data.gtmOnFailure();
 }
@@ -583,5 +613,3 @@ scenarios: []
 ___NOTES___
 
 Created on 6-11-2024 10:42:06
-
-
