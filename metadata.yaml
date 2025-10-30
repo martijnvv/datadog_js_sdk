@@ -1,5 +1,5 @@
 homepage: "https://martijnvanvreeden.nl"
 documentation: "https://github.com/martijnvv/datadog_js_sdk"
 versions:
-  - sha: 898caa7cccadc49b243f6c541e48fc98cc023639
-    changeNotes: Set allowedTracingUrls as an array of quoted strings
+  - sha: c27e9787ba1ff42f444b7d2440dc404acee56226
+    changeNotes: added additional parameters trackAnonymousUser and trackBfcacheViews
